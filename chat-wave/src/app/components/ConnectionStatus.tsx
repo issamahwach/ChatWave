@@ -36,9 +36,18 @@ function ConnectionStatus() {
   }, []);
 
   return (
-    <div>
-      ConnectionStatus:{" "}
-      {isConnected ? <span>Online</span> : <span>Offline</span>}
+    <div className="fixed bottom-4 left-4 text-xs bg-gray-100 px-6 py-2 rounded-full shadow-md">
+      {isConnected ? (
+        <div className="flex flex-row items-center gap-1">
+          <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+          <span className="text-green-600 font-bold">Online</span>
+        </div>
+      ) : (
+        <div className="flex flex-row items-center gap-1">
+          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+          <span className="text-red-500 font-bold">Offline</span>
+        </div>
+      )}
     </div>
   );
 }
