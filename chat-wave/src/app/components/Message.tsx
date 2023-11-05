@@ -9,7 +9,7 @@ interface MessageProps {
 function Message({ issuer, content, messageTime }: MessageProps) {
   return (
     <div
-      className={`relative px-4 py-1.5 max-w-3xl ${
+      className={`relative px-4 py-1.5 max-w-3xl rounded-sm ${
         issuer ? "bg-[#D3EECA] self-end" : "bg-[#F9F5F5] self-start"
       } max-w-max mb-8`}
     >

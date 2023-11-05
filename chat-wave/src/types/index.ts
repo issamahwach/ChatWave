@@ -3,3 +3,11 @@ interface MessageProps {
   issuer: string;
   messageTime: string;
 }
+
+interface ParticipantProps {
+  socket: string;
+}
+
+interface ParticipantsProps {
+  participants: ParticipantProps[];
+}

@@ -49,12 +49,14 @@ io.on("connection", (socket: SocketProps) => {
         users: [{ socket: socket.id }],
       });
       socket.join(socketQuery.roomName);
+      io.to(socketQuery.roomName).emit("join", [{ socket: socket.id }]);
     } else {
       socket.join(socketQuery.roomName);
       currentRooms.forEach((room) => {
         if (room.room === socketQuery.roomName) {
           room.count += 1;
           room.users.push({ socket: socket.id });
+          io.to(socketQuery.roomName).emit("join", room.users);
         }
       });
     }
@@ -89,8 +91,12 @@ io.on("connection", (socket: SocketProps) => {
       if (selectedRoom.count > 1) {
         console.log("Removing from room...");
         selectedRoom.count -= 1;
+
         const userIndex = selectedRoom.users.indexOf(socket.id);
         selectedRoom.users.splice(userIndex, 1);
+
+        io.to(socketQuery.roomName).emit("leave", selectedRoom.users);
+        // io.to(socketQuery.roomName).emit("leave", socket.id);
       } else {
         console.log(
           `Room ${selectedRoom.room} is left empty, deleting the room..`

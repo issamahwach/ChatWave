@@ -3,6 +3,7 @@ import { socket } from "../../utils/socket";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { addMessage } from "../../global/alert/messageSlice";
+import { updateParticipants } from "../../global/alert/participantSlice";
 function ConnectionStatus() {
   const dispatch = useDispatch();
   const [isConnected, setIsConnected] = React.useState(false);
@@ -23,18 +24,27 @@ function ConnectionStatus() {
       dispatch(addMessage(data));
     }
     function onJoin(data: string) {
+      // alert("someone joined the chat");
       console.log(data);
+      dispatch(updateParticipants(data));
+    }
+    function onLeave(data: string) {
+      // alert("someone joined the chat");
+      console.log(data);
+      dispatch(updateParticipants(data));
     }
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("message", onMessage);
     socket.on("join", onJoin);
+    socket.on("leave", onLeave);
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("message", onMessage);
-      socket.off("onJoin", onJoin);
+      socket.off("join", onJoin);
+      socket.off("leave", onLeave);
     };
   }, []);
 

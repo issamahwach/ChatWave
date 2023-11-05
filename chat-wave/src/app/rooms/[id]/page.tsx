@@ -7,6 +7,9 @@ import { useSelector } from "react-redux";
 
 function page({ params }: { params: { id: string } }) {
   const newMessage = useSelector((state: any) => state.message.message);
+  const participants = useSelector(
+    (state: any) => state.participant.participants
+  );
 
   React.useEffect(() => {
     if (!socket.connected && !socket.recovered) {
@@ -21,6 +24,15 @@ function page({ params }: { params: { id: string } }) {
     }
   }, [newMessage]);
 
+  React.useEffect(() => {
+    if (participants && participants.length !== 0) {
+      setParticipantsList(participants);
+    }
+  }, [participants]);
+
+  const [participantsList, setParticipantsList] = React.useState<
+    ParticipantProps[]
+  >([]);
   const [message, setMessage] = React.useState<string>("");
   const [chat, setChat] = React.useState<MessageProps[]>([]);
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -70,6 +82,34 @@ function page({ params }: { params: { id: string } }) {
             </button>
           </div>
         </div>
+        <div className="flex flex-col divide-y-2">
+          {participantsList &&
+            participantsList.map((item, index) => (
+              <div
+                key={"P" + index}
+                className="px-4 py-4 flex flex-row items-center gap-2"
+              >
+                <div className="px-1.5 py-1.5 bg-gray-100 rounded-full max-w-max">
+                  <svg
+                    className="w-8 h-8 text-gray-300"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <span className="text-sm">{item.socket}</span>
+              </div>
+            ))}
+        </div>
       </div>
       <div className="relative w-full lg:w-3/4 h-screen overflow-hidden">
         <div className="bg-[#F0EEF1] py-4 px-4 lg:px-8 flex flex-row justify-between items-center">
@@ -115,6 +155,10 @@ function page({ params }: { params: { id: string } }) {
           </Link>
         </div>
         <div className="min-h-full max-h-[10vh] flex flex-col overflow-y-scroll px-4 lg:px-10 pt-8 pb-52 bg-[#F0E7E0]">
+          <span className="text-xs self-center bg-[#F9F5F5] text-gray-700 px-2 py-1 rounded-sm">
+            Your messages are not being stored. Refreshing the page will delete
+            all messages.
+          </span>
           {chat.map((message, index) => (
             <Message
               issuer={message?.issuer === socket.id ? true : false}
