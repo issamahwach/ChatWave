@@ -4,6 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import { MessageProps, SocketProps } from "../types/index.js";
+import { getCurrentTime } from "../utils/index.js";
+
 dotenv.config();
 
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
@@ -64,6 +66,8 @@ io.on("connection", (socket: SocketProps) => {
   socket.on("message", (message) => {
     let content = JSON.parse(message);
     console.log("Received: ", content.message);
+    const messageTime = getCurrentTime();
+    content.messageTime = messageTime;
     io.to(socketQuery.roomName).emit("message", content);
   });
 

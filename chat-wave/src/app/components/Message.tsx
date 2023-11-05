@@ -3,16 +3,20 @@ import React from "react";
 interface MessageProps {
   issuer: boolean;
   content: string;
+  messageTime: string;
 }
 
-function Message({ issuer, content }: MessageProps) {
+function Message({ issuer, content, messageTime }: MessageProps) {
   return (
     <div
-      className={`px-4 py-2 max-w-3xl ${
+      className={`relative px-4 py-1.5 max-w-3xl ${
         issuer ? "bg-[#D3EECA] self-end" : "bg-[#F9F5F5] self-start"
       } max-w-max mb-8`}
     >
-      <p>{content}</p>
+      <p className="pb-3">{content}</p>
+      <span className="absolute bottom-1 right-1 text-xs text-gray-500">
+        {messageTime}
+      </span>
     </div>
   );
 }

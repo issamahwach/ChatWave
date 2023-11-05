@@ -119,6 +119,7 @@ function page({ params }: { params: { id: string } }) {
             <Message
               issuer={message?.issuer === socket.id ? true : false}
               content={message?.message}
+              messageTime={message?.messageTime}
               key={index}
             />
           ))}
