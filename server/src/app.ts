@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
-import { SocketProps } from "../types/index.js";
+import { MessageProps, SocketProps } from "../types/index.js";
 dotenv.config();
 
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
@@ -34,7 +34,7 @@ io.on("connection", (socket: SocketProps) => {
   connectedUsers.push(socket.id);
   console.log("connected users: ", connectedUsers);
 
-  let socketQuery = socket.handshake.query;
+  var socketQuery = socket.handshake.query;
 
   if (socketQuery && socketQuery.roomName !== "default") {
     const existingRoom = currentRooms.find(
@@ -61,9 +61,10 @@ io.on("connection", (socket: SocketProps) => {
   }
 
   // Listen for incoming messages
-  socket.on("message", (message: string) => {
-    console.log("Received: " + message);
-    io.to(socketQuery.roomName).emit("message", message);
+  socket.on("message", (message) => {
+    let content = JSON.parse(message);
+    console.log("Received: ", content.message);
+    io.to(socketQuery.roomName).emit("message", content);
   });
 
   // Disconnect the user when they leave

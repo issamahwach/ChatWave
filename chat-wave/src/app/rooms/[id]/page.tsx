@@ -3,8 +3,11 @@ import Message from "@/app/components/Message";
 import { createSocket, socket } from "@/utils/socket";
 import Link from "next/link";
 import React from "react";
+import { useSelector } from "react-redux";
 
 function page({ params }: { params: { id: string } }) {
+  const newMessage = useSelector((state: any) => state.message.message);
+
   React.useEffect(() => {
     if (!socket.connected && !socket.recovered) {
       createSocket(params.id);
@@ -12,15 +15,32 @@ function page({ params }: { params: { id: string } }) {
     }
   }, []);
 
+  React.useEffect(() => {
+    if (newMessage && newMessage !== "") {
+      setChat((prevValue) => [...prevValue, newMessage]);
+    }
+  }, [newMessage]);
+
   const [message, setMessage] = React.useState<string>("");
+  const [chat, setChat] = React.useState<MessageProps[]>([]);
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
     setMessage(value);
   };
+
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (message && message !== "") {
-      socket.emit("message", message);
+      socket.emit(
+        "message",
+        JSON.stringify({ message: message, issuer: socket.id })
+      );
       setMessage("");
     }
   };
@@ -95,7 +115,13 @@ function page({ params }: { params: { id: string } }) {
           </Link>
         </div>
         <div className="min-h-full max-h-[10vh] flex flex-col overflow-y-scroll px-4 lg:px-10 pt-8 pb-52 bg-[#F0E7E0]">
-          <Message issuer={false} content="Hello All!" />
+          {chat.map((message, index) => (
+            <Message
+              issuer={message?.issuer === socket.id ? true : false}
+              content={message?.message}
+              key={index}
+            />
+          ))}
         </div>
         <div className="absolute bottom-0 left-0 w-full bg-[#F0EEF1] py-4 px-4 lg:px-8">
           <div className="w-full">
@@ -106,6 +132,7 @@ function page({ params }: { params: { id: string } }) {
                   rows={1}
                   value={message}
                   onChange={handleChange}
+                  onKeyDown={handleEnterKeyPress}
                   placeholder="Type a message.."
                   className="w-full border-0 rounded-md font-light focus:ring-0 resize-none"
                 ></textarea>

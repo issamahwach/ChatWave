@@ -7,3 +7,8 @@ export interface SocketProps {
   handshake?: any;
   recovered?: boolean;
 }
+
+export interface MessageProps {
+  message: string;
+  issuer: string;
+}

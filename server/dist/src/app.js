@@ -2,13 +2,15 @@ import express from "express";
 import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
-dotenv.config();
-const app = express();
 import http from "http";
+dotenv.config();
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
+const PORT = process.env.PORT || 3001;
+const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: CLIENT_ORIGIN,
         methods: ["GET", "POST"],
     },
 });
@@ -17,15 +19,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 var currentRooms = [{ room: "defaut", count: 0, users: [] }];
 var connectedUsers = [];
-app.get("/", (req, res) => {
-    res.send("Hello!");
+app.get("*", (req, res) => {
+    res.send("REST API is currenctly disabled.");
 });
 io.on("connection", (socket) => {
-    console.log("New user connected!");
-    console.log("socket id: ", socket.id);
+    console.log("New user connected with socket id: ", socket.id);
     connectedUsers.push(socket.id);
     console.log("connected users: ", connectedUsers);
-    let socketQuery = socket.handshake.query;
+    var socketQuery = socket.handshake.query;
     if (socketQuery && socketQuery.roomName !== "default") {
         const existingRoom = currentRooms.find((exRoom) => exRoom.room === socketQuery.roomName);
         if (!existingRoom) {
@@ -49,9 +50,9 @@ io.on("connection", (socket) => {
     }
     // Listen for incoming messages
     socket.on("message", (message) => {
-        // Broadcast the message to all connected users
-        console.log("Received: " + message);
-        // io.to(socketQuery.roomName).emit("message", message);
+        let content = JSON.parse(message);
+        console.log("Received: ", content.message);
+        io.to(socketQuery.roomName).emit("message", content);
     });
     // Disconnect the user when they leave
     socket.on("disconnect", () => {
@@ -64,20 +65,20 @@ io.on("connection", (socket) => {
         var selectedRoom = currentRooms.find((e) => e.room === socket.handshake.query.roomName);
         if (selectedRoom) {
             if (selectedRoom.count > 1) {
-                console.log("deducting from room");
+                console.log("Removing from room...");
                 selectedRoom.count -= 1;
                 const userIndex = selectedRoom.users.indexOf(socket.id);
                 selectedRoom.users.splice(userIndex, 1);
             }
             else {
-                console.log("room is empty, deleting room..");
+                console.log(`Room ${selectedRoom.room} is left empty, deleting the room..`);
                 const roomIndex = currentRooms.indexOf(selectedRoom);
                 currentRooms.splice(roomIndex, 1);
             }
         }
     });
 });
-server.listen(process.env.PORT, () => {
-    console.log(`Server listening on port ${process.env.PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
 });
 //# sourceMappingURL=app.js.map

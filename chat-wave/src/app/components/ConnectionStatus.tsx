@@ -1,8 +1,10 @@
 "use client";
 import { socket } from "../../utils/socket";
 import React from "react";
-
+import { useDispatch } from "react-redux";
+import { addMessage } from "../../global/alert/messageSlice";
 function ConnectionStatus() {
+  const dispatch = useDispatch();
   const [isConnected, setIsConnected] = React.useState(false);
 
   React.useEffect(() => {
@@ -16,8 +18,9 @@ function ConnectionStatus() {
       setIsConnected(false);
     }
 
-    function onMessage(data: string) {
+    function onMessage(data: any) {
       console.log(data);
+      dispatch(addMessage(data));
     }
     function onJoin(data: string) {
       console.log(data);
