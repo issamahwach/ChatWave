@@ -28,7 +28,7 @@ function page({ params }: { params: { id: string } }) {
     setMessage(value);
   };
 
-  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
