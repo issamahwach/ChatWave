@@ -24,9 +24,6 @@ export default function RootLayout({
       <body className={`relative ${inter.className}`}>
         <Provider store={store}>
           <Alert />
-          {/* <div className="fixed top-4 left-4 bg-red-500 w-32 h-12 z-50">
-            dfsfdsdf
-          </div> */}
           <ConnectionStatus />
           <main>{children}</main>
         </Provider>

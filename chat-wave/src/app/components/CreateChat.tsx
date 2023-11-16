@@ -12,20 +12,21 @@ function CreateChat() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("submitted");
     createSocket(name);
     socket.connect();
     router.push(`/rooms/${name}`);
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col md:flex-row gap-8 md:gap-0"
+    >
       <input
         type="text"
         name="name"
         value={name}
         onChange={handleChange}
         placeholder="Enter your name.."
-        className=""
       />
       <button
         type="submit"
